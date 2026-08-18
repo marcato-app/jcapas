@@ -5,7 +5,7 @@ compatibility_date = "2026-08-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "jcapas-db"
-database_id = "REPLACE_ME"
+database_id = "824cf921-3958-4c28-ac6c-813241aea078"
 
 [assets]
 directory = "./public"
