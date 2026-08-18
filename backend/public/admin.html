@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Administrativo — Ruan Pedro Imports</title>
+<title>Painel Administrativo — JCapas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#0b0b0a; --ink-2:#151412; --ink-3:#221f18;
     --paper:#faf7ef; --paper-2:#f1ead7; --line:#e2d9c2; --line-dark:#3d3627;
-    --gold-1:#fff3c4; --gold-2:#f2ca5c; --gold-3:#d4af37; --gold-4:#a2731f;
+    --gold-1:#eaffb0; --gold-2:#a8e063; --gold-3:#7cc72f; --gold-4:#4f8f1a;
     --gold-grad:linear-gradient(135deg,var(--gold-1) 0%,var(--gold-2) 32%,var(--gold-3) 62%,var(--gold-4) 100%);
     --muted:#726b54; --muted-2:#948c72; --danger:#b23b3b;
     --radius:10px; --radius-sm:6px;
@@ -180,7 +180,7 @@
 <div id="view-login">
   <div class="login-box">
     <h1>Painel Administrativo</h1>
-    <p class="sub">Ruan Pedro Imports</p>
+    <p class="sub">JCapas</p>
     <div id="login-error" class="login-error hidden"></div>
     <form id="login-form">
       <div class="field"><label>Usuário</label><input type="text" id="login-username" autocomplete="username" required></div>
@@ -193,7 +193,7 @@
 <!-- ===== DASHBOARD VIEW ===== -->
 <div id="view-dashboard" class="hidden">
   <header class="top">
-    <div class="brand">Ruan Pedro Imports<small>Painel administrativo</small></div>
+    <div class="brand">JCapas<small>Painel administrativo</small></div>
     <div class="who">
       <span id="who-username"></span>
       <button id="btn-logout">Sair</button>
@@ -927,16 +927,19 @@ function openProductForm(id) {
       <div class="field"><label>Avaliação (0-5)</label><input id="f-rating" type="number" step="0.1" min="0" max="5" value="${p ? p.rating : 4.5}"></div>
       <div class="field"><label>Nº de avaliações</label><input id="f-reviews" type="number" value="${p ? p.reviews : 0}"></div>
     </div>
-    <div class="field"><label>Tamanhos (separados por vírgula)</label><input id="f-sizes" value="${p ? esc(p.sizes.join(', ')) : ''}"></div>
+    <div class="field"><label>Modelos compatíveis (separados por vírgula)</label><input id="f-sizes" value="${p ? esc(p.sizes.join(', ')) : ''}"></div>
     <div class="field"><label>Cores (separadas por vírgula)</label><input id="f-colors" value="${p ? esc(p.colors.join(', ')) : ''}"></div>
     <div class="field"><label>Ícone da vitrine</label>
       <select id="f-icon">
+        <option value="capa" ${p && p.icon === 'capa' ? 'selected' : ''}>Capa</option>
+        <option value="pelicula" ${p && p.icon === 'pelicula' ? 'selected' : ''}>Película</option>
+        <option value="carregador" ${p && p.icon === 'carregador' ? 'selected' : ''}>Carregador</option>
+        <option value="acessorio" ${p && p.icon === 'acessorio' ? 'selected' : ''}>Acessório</option>
         <option value="tenis" ${p && p.icon === 'tenis' ? 'selected' : ''}>Tênis</option>
         <option value="bone" ${p && p.icon === 'bone' ? 'selected' : ''}>Boné</option>
         <option value="camisa" ${p && p.icon === 'camisa' ? 'selected' : ''}>Camisa</option>
         <option value="calca" ${p && p.icon === 'calca' ? 'selected' : ''}>Calça</option>
         <option value="chinelo" ${p && p.icon === 'chinelo' ? 'selected' : ''}>Chinelo</option>
-        <option value="acessorio" ${p && p.icon === 'acessorio' ? 'selected' : ''}>Acessório</option>
         <option value="geral" ${p && p.icon === 'geral' ? 'selected' : ''}>Genérico</option>
       </select>
     </div>
@@ -1032,8 +1035,9 @@ function openBannerForm(id) {
     <div class="field"><label>Ação do botão</label>
       <select id="f-cta-action">
         <option value="catalog:todos" ${b && b.cta_action === 'catalog:todos' ? 'selected' : ''}>Abrir catálogo completo</option>
-        <option value="catalog:tenis" ${b && b.cta_action === 'catalog:tenis' ? 'selected' : ''}>Abrir catálogo de Tênis</option>
-        <option value="catalog:bone" ${b && b.cta_action === 'catalog:bone' ? 'selected' : ''}>Abrir catálogo de Bonés</option>
+        <option value="catalog:capa" ${b && b.cta_action === 'catalog:capa' ? 'selected' : ''}>Abrir catálogo de Capas</option>
+        <option value="catalog:pelicula" ${b && b.cta_action === 'catalog:pelicula' ? 'selected' : ''}>Abrir catálogo de Películas</option>
+        <option value="catalog:carregador" ${b && b.cta_action === 'catalog:carregador' ? 'selected' : ''}>Abrir catálogo de Carregadores</option>
         <option value="coupon:BEMVINDO10" ${b && b.cta_action === 'coupon:BEMVINDO10' ? 'selected' : ''}>Copiar cupom BEMVINDO10</option>
       </select>
     </div>

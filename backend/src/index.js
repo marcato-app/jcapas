@@ -256,7 +256,7 @@ route('POST', '/api/admin/products', async (request, env) => {
   ).bind(
     id, b.categoryId, b.name, b.brand || '', b.price, b.tag || '',
     b.rating ?? 4.5, b.reviews ?? 0, JSON.stringify(b.sizes || []), JSON.stringify(b.colors || []),
-    b.icon || 'tenis', b.active === false ? 0 : 1, b.sortOrder || 0,
+    b.icon || 'capa', b.active === false ? 0 : 1, b.sortOrder || 0,
     b.description || '', b.stock === '' || b.stock == null ? null : b.stock, b.imageKey || null
   ).run();
   return json({ id });
@@ -271,7 +271,7 @@ route('PUT', '/api/admin/products/:id', async (request, env, params) => {
   ).bind(
     b.categoryId, b.name, b.brand || '', b.price, b.tag || '',
     b.rating ?? 4.5, b.reviews ?? 0, JSON.stringify(b.sizes || []), JSON.stringify(b.colors || []),
-    b.icon || 'tenis', b.active === false ? 0 : 1, b.sortOrder || 0,
+    b.icon || 'capa', b.active === false ? 0 : 1, b.sortOrder || 0,
     b.description || '', b.stock === '' || b.stock == null ? null : b.stock, b.imageKey || null, params.id
   ).run();
   return json({ ok: true });
