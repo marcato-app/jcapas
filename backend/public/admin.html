@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Administrativo — Ruan Pedro Imports</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0b0b0a; --ink-2:#151412; --ink-3:#221f18;
+    --paper:#faf7ef; --paper-2:#f1ead7; --line:#e2d9c2; --line-dark:#3d3627;
+    --gold-1:#fff3c4; --gold-2:#f2ca5c; --gold-3:#d4af37; --gold-4:#a2731f;
+    --gold-grad:linear-gradient(135deg,var(--gold-1) 0%,var(--gold-2) 32%,var(--gold-3) 62%,var(--gold-4) 100%);
+    --muted:#726b54; --muted-2:#948c72; --danger:#b23b3b;
+    --radius:10px; --radius-sm:6px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',ui-sans-serif,system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:14px;}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;color:var(--ink);}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  input,select,textarea{font-family:inherit;font-size:.85rem;}
+  a{color:inherit;}
+  .hidden{display:none !important;}
+
+  /* ===== LOGIN ===== */
+  #view-login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--ink);padding:20px;}
+  .login-box{background:var(--paper);border-radius:var(--radius);padding:40px 36px;max-width:380px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4);}
+  .login-box h1{font-size:1.5rem;font-style:italic;font-weight:600;margin-bottom:4px;text-align:center;}
+  .login-box p.sub{text-align:center;color:var(--muted);font-size:.78rem;margin-bottom:28px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:var(--radius-sm);outline:none;background:var(--paper);color:var(--ink);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{border-color:var(--gold-3);}
+  .field textarea{resize:vertical;min-height:70px;}
+  .btn-gold{
+    width:100%;padding:13px;border-radius:30px;background:var(--gold-grad);color:var(--ink);
+    font-weight:800;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;
+  }
+  .login-error{background:#fbeaea;border:1px solid #e3b3b3;color:var(--danger);font-size:.78rem;padding:10px 12px;border-radius:var(--radius-sm);margin-bottom:16px;}
+
+  /* ===== SHELL ===== */
+  #view-dashboard{min-height:100vh;}
+  header.top{background:var(--ink);color:var(--paper);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  header.top .brand{font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:1.2rem;color:var(--gold-2);}
+  header.top .brand small{display:block;font-family:'Inter';font-style:normal;font-size:.62rem;letter-spacing:.1em;color:var(--muted-2);text-transform:uppercase;}
+  header.top .who{display:flex;align-items:center;gap:14px;font-size:.8rem;}
+  header.top .who button{border:1px solid var(--line-dark);padding:8px 16px;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted-2);}
+  header.top .who button:hover{border-color:var(--gold-3);color:var(--gold-2);}
+
+  nav.tabs{display:flex;gap:6px;padding:14px 24px;background:var(--ink-2);overflow-x:auto;}
+  nav.tabs button{padding:10px 20px;border-radius:20px;font-size:.78rem;font-weight:700;letter-spacing:.03em;color:var(--muted-2);white-space:nowrap;}
+  nav.tabs button:hover{color:var(--paper);}
+  nav.tabs button.active{background:var(--gold-grad);color:var(--ink);}
+
+  main{max-width:1100px;margin:0 auto;padding:32px 24px 80px;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px;}
+  .panel-head h2{font-size:1.4rem;font-style:italic;font-weight:600;}
+  .btn-add{
+    display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--gold-2);
+    padding:11px 20px;border-radius:30px;font-size:.76rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+  }
+  .btn-add:hover{background:var(--gold-3);color:var(--ink);}
+
+  table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  thead th{
+    text-align:left;font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    padding:12px 14px;background:var(--paper-2);border-bottom:1px solid var(--line);
+  }
+  tbody td{padding:12px 14px;border-bottom:1px solid var(--line);font-size:.82rem;vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--paper-2);}
+  .row-actions{display:flex;gap:8px;}
+  .row-actions button{font-size:.72rem;font-weight:700;letter-spacing:.02em;padding:6px 12px;border-radius:6px;border:1px solid var(--line);}
+  .row-actions button:hover{border-color:var(--gold-3);color:var(--gold-4);}
+  .row-actions button.danger:hover{border-color:var(--danger);color:var(--danger);}
+  .pill{display:inline-flex;padding:4px 10px;border-radius:20px;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
+  .pill.on{background:#e6f2e6;color:#2e7d32;}
+  .pill.off{background:#f2e6e6;color:var(--danger);}
+  .empty-row td{text-align:center;color:var(--muted);padding:40px;}
+
+  /* ===== DRAWER (add/edit form) ===== */
+  .overlay{position:fixed;inset:0;background:rgba(11,11,10,.55);display:none;align-items:stretch;justify-content:flex-end;z-index:200;}
+  .overlay.open{display:flex;}
+  .drawer{background:var(--paper);width:100%;max-width:420px;height:100%;overflow-y:auto;animation:slideIn .2s ease;}
+  @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+  .drawer-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--paper);}
+  .drawer-header h3{font-size:1.1rem;font-style:italic;font-weight:600;}
+  .close-btn{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .close-btn:hover{background:var(--paper-2);}
+  .drawer-body{padding:22px 24px;}
+  .drawer-footer{padding:18px 24px;border-top:1px solid var(--line);display:flex;gap:10px;}
+  .btn-secondary{flex:1;padding:12px;border-radius:30px;border:1.5px solid var(--line);font-weight:700;font-size:.76rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);}
+  .checkbox-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .checkbox-row input{width:auto;}
+  td select{padding:7px 10px;border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--paper);color:var(--ink);font-weight:600;}
+  .form-error{background:#fbeaea;border:1px solid #e3b3b3;color:var(--danger);font-size:.78rem;padding:10px 12px;border-radius:var(--radius-sm);margin-bottom:16px;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:var(--gold-2);padding:13px 24px;border-radius:30px;font-size:.78rem;font-weight:700;
+    box-shadow:0 12px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.25s;z-index:400;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ===== FILTER BAR ===== */
+  .filter-bar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+  .filter-bar input, .filter-bar select{
+    padding:9px 12px;border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--paper);color:var(--ink);font-size:.8rem;
+  }
+  .filter-bar input:focus, .filter-bar select:focus{outline:none;border-color:var(--gold-3);}
+  .filter-bar input[type=text]{flex:1;min-width:180px;}
+  .filter-bar input[type=date]{min-width:140px;}
+  .filter-bar .btn-clear{
+    padding:9px 16px;border:1.5px solid var(--line);border-radius:var(--radius-sm);font-size:.72rem;font-weight:700;
+    letter-spacing:.03em;text-transform:uppercase;color:var(--muted);white-space:nowrap;
+  }
+  .filter-bar .btn-clear:hover{border-color:var(--gold-3);color:var(--gold-4);}
+
+  /* ===== DASHBOARD ===== */
+  .cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+  .metric-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;}
+  .metric-card .label{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:8px;}
+  .metric-card .value{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;color:var(--ink);}
+  .dash-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;}
+  .dash-box{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;}
+  .dash-box h3{font-size:.95rem;font-style:italic;font-weight:600;margin-bottom:16px;}
+  .chart-wrap{overflow-x:auto;}
+  .bar-col{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:26px;}
+  .bar-col .bar{width:16px;background:var(--gold-grad);border-radius:4px 4px 0 0;min-height:2px;}
+  .bar-col .bar-val{font-size:.6rem;color:var(--muted);white-space:nowrap;}
+  .bar-col .bar-day{font-size:.6rem;color:var(--muted-2);white-space:nowrap;}
+  .top-product-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:.8rem;}
+  .top-product-row .tp-name{flex:0 0 120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .top-product-row .tp-bar-track{flex:1;background:var(--paper-2);border-radius:20px;height:10px;overflow:hidden;}
+  .top-product-row .tp-bar-fill{height:100%;background:var(--gold-grad);border-radius:20px;}
+  .top-product-row .tp-qty{flex:0 0 auto;font-weight:700;color:var(--muted);font-size:.72rem;}
+  .status-breakdown{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
+  .status-chip{padding:6px 14px;border-radius:20px;font-size:.7rem;font-weight:700;background:var(--paper-2);color:var(--muted);}
+
+  .link-btn{color:var(--gold-4);font-weight:700;font-size:.72rem;text-decoration:underline;white-space:nowrap;}
+  .link-btn:hover{color:var(--gold-3);}
+
+  /* ===== ORDER ITEMS EDITOR ===== */
+  .order-item-row{border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+  .order-item-row.is-unavailable{background:#fbeaea;border-color:#e3b3b3;opacity:.8;}
+  .oi-info{display:flex;flex-direction:column;gap:4px;font-size:.82rem;}
+  .oi-variant{color:var(--muted);font-size:.74rem;}
+  .oi-price{color:var(--muted);font-size:.76rem;}
+  .oi-flag{display:inline-block;background:var(--danger);color:#fff;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:10px;width:fit-content;}
+  .oi-actions{display:flex;flex-direction:column;gap:6px;}
+  .oi-actions button{font-size:.7rem;font-weight:700;padding:6px 12px;border-radius:6px;border:1px solid var(--line);white-space:nowrap;}
+  .oi-actions button:hover{border-color:var(--gold-3);color:var(--gold-4);}
+  .oi-actions button.danger:hover{border-color:var(--danger);color:var(--danger);}
+  .oi-totals{text-align:right;padding-top:8px;font-size:.85rem;color:var(--muted);}
+
+  @media(max-width:900px){
+    .cards-grid{grid-template-columns:repeat(2,1fr);}
+    .dash-grid{grid-template-columns:1fr;}
+  }
+  @media(max-width:640px){
+    .field-row{grid-template-columns:1fr;}
+    table, thead, tbody, th, td, tr{display:block;}
+    thead{display:none;}
+    tbody tr{border-bottom:1px solid var(--line);padding:12px 14px;}
+    tbody td{border:none;padding:4px 0;display:flex;justify-content:space-between;gap:10px;}
+    tbody td::before{content:attr(data-label);font-weight:700;color:var(--muted);font-size:.68rem;text-transform:uppercase;}
+    tbody td:last-child{justify-content:flex-end;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN VIEW ===== -->
+<div id="view-login">
+  <div class="login-box">
+    <h1>Painel Administrativo</h1>
+    <p class="sub">Ruan Pedro Imports</p>
+    <div id="login-error" class="login-error hidden"></div>
+    <form id="login-form">
+      <div class="field"><label>Usuário</label><input type="text" id="login-username" autocomplete="username" required></div>
+      <div class="field"><label>Senha</label><input type="password" id="login-password" autocomplete="current-password" required></div>
+      <button type="submit" class="btn-gold">Entrar</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD VIEW ===== -->
+<div id="view-dashboard" class="hidden">
+  <header class="top">
+    <div class="brand">Ruan Pedro Imports<small>Painel administrativo</small></div>
+    <div class="who">
+      <span id="who-username"></span>
+      <button id="btn-logout">Sair</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+    <button class="tab-btn" data-tab="produtos">Produtos</button>
+    <button class="tab-btn" data-tab="pedidos">Pedidos</button>
+    <button class="tab-btn" data-tab="categorias">Categorias</button>
+    <button class="tab-btn" data-tab="cupons">Cupons</button>
+    <button class="tab-btn" data-tab="banners">Banners</button>
+    <button class="tab-btn" data-tab="newsletter">Newsletter</button>
+  </nav>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section class="panel active" id="panel-dashboard">
+      <div class="panel-head">
+        <h2>Dashboard</h2>
+      </div>
+      <div class="cards-grid">
+        <div class="metric-card"><div class="label">Faturamento total</div><div class="value" id="m-revenue">R$ 0,00</div></div>
+        <div class="metric-card"><div class="label">Pedidos</div><div class="value" id="m-orders">0</div></div>
+        <div class="metric-card"><div class="label">Ticket médio</div><div class="value" id="m-avg">R$ 0,00</div></div>
+        <div class="metric-card"><div class="label">Inscritos newsletter</div><div class="value" id="m-subs">0</div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="dash-box">
+          <h3>Faturamento por dia (últimos 14 dias)</h3>
+          <div class="chart-wrap"><div id="revenue-chart" style="display:flex;align-items:flex-end;gap:10px;height:160px;"></div></div>
+        </div>
+        <div class="dash-box">
+          <h3>Produtos mais vendidos</h3>
+          <div id="top-products"></div>
+        </div>
+      </div>
+      <div class="dash-box" style="margin-top:20px;">
+        <h3>Pedidos por status</h3>
+        <div class="status-breakdown" id="status-breakdown"></div>
+      </div>
+    </section>
+
+    <!-- PRODUTOS -->
+    <section class="panel" id="panel-produtos">
+      <div class="panel-head">
+        <h2>Produtos</h2>
+        <button class="btn-add" onclick="openProductForm()">+ Novo produto</button>
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="pf-search" placeholder="Buscar por nome ou marca...">
+        <select id="pf-category"><option value="">Todas categorias</option></select>
+        <select id="pf-color"><option value="">Todas cores</option></select>
+        <select id="pf-size"><option value="">Todos tamanhos</option></select>
+        <select id="pf-status">
+          <option value="">Todos status</option>
+          <option value="1">Ativo</option>
+          <option value="0">Inativo</option>
+        </select>
+        <button class="btn-clear" onclick="clearProductFilters()">Limpar filtros</button>
+      </div>
+      <table>
+        <thead><tr><th>Produto</th><th>Categoria</th><th>Marca</th><th>Preço</th><th>Status</th><th></th></tr></thead>
+        <tbody id="products-tbody"></tbody>
+      </table>
+    </section>
+
+    <!-- PEDIDOS -->
+    <section class="panel" id="panel-pedidos">
+      <div class="panel-head">
+        <h2>Pedidos</h2>
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="of-search" placeholder="Buscar cliente (nome, telefone, e-mail)...">
+        <input type="date" id="of-from" title="De">
+        <input type="date" id="of-to" title="Até">
+        <select id="of-status">
+          <option value="">Todos status</option>
+          <option value="novo">Novo</option>
+          <option value="em_andamento">Em andamento</option>
+          <option value="concluido">Concluído</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+        <button class="btn-clear" onclick="clearOrderFilters()">Limpar filtros</button>
+      </div>
+      <table>
+        <thead><tr><th>Data</th><th>Cliente</th><th>Itens</th><th>Total</th><th>Status</th></tr></thead>
+        <tbody id="orders-tbody"></tbody>
+      </table>
+    </section>
+
+    <!-- NEWSLETTER -->
+    <section class="panel" id="panel-newsletter">
+      <div class="panel-head">
+        <h2>Inscritos na newsletter</h2>
+      </div>
+      <table>
+        <thead><tr><th>Nome</th><th>E-mail</th><th>Cadastrado em</th><th></th></tr></thead>
+        <tbody id="newsletter-tbody"></tbody>
+      </table>
+    </section>
+
+    <!-- CATEGORIAS -->
+    <section class="panel" id="panel-categorias">
+      <div class="panel-head">
+        <h2>Categorias</h2>
+        <button class="btn-add" onclick="openCategoryForm()">+ Nova categoria</button>
+      </div>
+      <table>
+        <thead><tr><th>Nome</th><th>Slug</th><th>Ordem</th><th></th></tr></thead>
+        <tbody id="categories-tbody"></tbody>
+      </table>
+    </section>
+
+    <!-- CUPONS -->
+    <section class="panel" id="panel-cupons">
+      <div class="panel-head">
+        <h2>Cupons</h2>
+        <button class="btn-add" onclick="openCouponForm()">+ Novo cupom</button>
+      </div>
+      <table>
+        <thead><tr><th>Código</th><th>Descrição</th><th>Desconto</th><th>Status</th><th></th></tr></thead>
+        <tbody id="coupons-tbody"></tbody>
+      </table>
+    </section>
+
+    <!-- BANNERS -->
+    <section class="panel" id="panel-banners">
+      <div class="panel-head">
+        <h2>Banners do carrossel</h2>
+        <button class="btn-add" onclick="openBannerForm()">+ Novo banner</button>
+      </div>
+      <table>
+        <thead><tr><th>Ordem</th><th>Título</th><th>Tema</th><th>Status</th><th></th></tr></thead>
+        <tbody id="banners-tbody"></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<!-- ===== GENERIC DRAWER ===== -->
+<div class="overlay" id="overlay-form">
+  <div class="drawer">
+    <div class="drawer-header">
+      <h3 id="form-title">Formulário</h3>
+      <button class="close-btn" onclick="closeForm()">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div id="form-error" class="form-error hidden"></div>
+      <div id="form-body"></div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn-secondary" onclick="closeForm()">Cancelar</button>
+      <button class="btn-gold" id="form-save-btn" style="flex:1;">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+let categories = [], products = [], coupons = [], banners = [], orders = [], subscribers = [];
+let editingType = null, editingId = null;
+let productFilters = { search: '', category: '', color: '', size: '', status: '' };
+let orderFilters = { search: '', from: '', to: '', status: '' };
+
+const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+function esc(str) {
+  return String(str ?? '').replace(/[&<>"']/g, (c) => ESC_MAP[c]);
+}
+
+async function api(path, options = {}) {
+  const res = await fetch(API + path, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+    credentials: 'same-origin',
+  });
+  if (res.status === 401) { showLogin(); throw new Error('unauthorized'); }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Erro na requisição');
+  return data;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ===== AUTH ===== */
+function showLogin() {
+  document.getElementById('view-login').classList.remove('hidden');
+  document.getElementById('view-dashboard').classList.add('hidden');
+}
+function showDashboard(username) {
+  document.getElementById('view-login').classList.add('hidden');
+  document.getElementById('view-dashboard').classList.remove('hidden');
+  document.getElementById('who-username').textContent = username;
+}
+
+async function checkAuth() {
+  try {
+    const me = await api('/api/admin/me');
+    showDashboard(me.username);
+    await loadAll();
+  } catch (e) {
+    showLogin();
+  }
+}
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errBox = document.getElementById('login-error');
+  errBox.classList.add('hidden');
+  try {
+    const res = await fetch('/api/admin/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Falha no login');
+    showDashboard(data.username);
+    await loadAll();
+  } catch (err) {
+    errBox.textContent = err.message;
+    errBox.classList.remove('hidden');
+  }
+});
+
+document.getElementById('btn-logout').addEventListener('click', async () => {
+  await fetch('/api/admin/logout', { method: 'POST' });
+  showLogin();
+});
+
+/* ===== TABS ===== */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + btn.dataset.tab));
+  });
+});
+
+/* ===== LOAD DATA ===== */
+async function loadAll() {
+  [categories, products, coupons, banners, orders, subscribers] = await Promise.all([
+    api('/api/admin/categories'),
+    api('/api/admin/products'),
+    api('/api/admin/coupons'),
+    api('/api/admin/banners'),
+    api('/api/admin/orders'),
+    api('/api/admin/newsletter'),
+  ]);
+  populateProductFilterOptions();
+  renderDashboard(); renderProducts(); renderCategories(); renderCoupons(); renderBanners(); renderOrders(); renderNewsletter();
+}
+
+/* ===== PRODUCT FILTERS ===== */
+function populateProductFilterOptions() {
+  const catSel = document.getElementById('pf-category');
+  const keepCat = catSel.value;
+  catSel.innerHTML = '<option value="">Todas categorias</option>' +
+    categories.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
+  catSel.value = keepCat;
+
+  const colors = [...new Set(products.flatMap(p => p.colors || []))].sort();
+  const colorSel = document.getElementById('pf-color');
+  const keepColor = colorSel.value;
+  colorSel.innerHTML = '<option value="">Todas cores</option>' + colors.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  colorSel.value = keepColor;
+
+  const sizes = [...new Set(products.flatMap(p => p.sizes || []))].sort();
+  const sizeSel = document.getElementById('pf-size');
+  const keepSize = sizeSel.value;
+  sizeSel.innerHTML = '<option value="">Todos tamanhos</option>' + sizes.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+  sizeSel.value = keepSize;
+}
+
+function getFilteredProducts() {
+  const q = productFilters.search.trim().toLowerCase();
+  return products.filter(p => {
+    if (q && !(p.name.toLowerCase().includes(q) || (p.brand || '').toLowerCase().includes(q))) return false;
+    if (productFilters.category && p.categoryId !== productFilters.category) return false;
+    if (productFilters.color && !(p.colors || []).includes(productFilters.color)) return false;
+    if (productFilters.size && !(p.sizes || []).includes(productFilters.size)) return false;
+    if (productFilters.status !== '' && String(p.active ? 1 : 0) !== productFilters.status) return false;
+    return true;
+  });
+}
+
+['pf-search'].forEach(id => document.getElementById(id).addEventListener('input', (e) => {
+  productFilters.search = e.target.value; renderProducts();
+}));
+['pf-category', 'pf-color', 'pf-size', 'pf-status'].forEach(id => {
+  const key = id.replace('pf-', '');
+  document.getElementById(id).addEventListener('change', (e) => {
+    productFilters[key] = e.target.value; renderProducts();
+  });
+});
+function clearProductFilters() {
+  productFilters = { search: '', category: '', color: '', size: '', status: '' };
+  document.getElementById('pf-search').value = '';
+  document.getElementById('pf-category').value = '';
+  document.getElementById('pf-color').value = '';
+  document.getElementById('pf-size').value = '';
+  document.getElementById('pf-status').value = '';
+  renderProducts();
+}
+
+/* ===== ORDER FILTERS ===== */
+function getFilteredOrders() {
+  const q = orderFilters.search.trim().toLowerCase();
+  return orders.filter(o => {
+    if (q) {
+      const hay = `${o.customerName || ''} ${o.customerPhone || ''} ${o.customerEmail || ''}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    if (orderFilters.status && o.status !== orderFilters.status) return false;
+    const orderDate = (o.createdAt || '').slice(0, 10);
+    if (orderFilters.from && orderDate < orderFilters.from) return false;
+    if (orderFilters.to && orderDate > orderFilters.to) return false;
+    return true;
+  });
+}
+
+['of-search'].forEach(id => document.getElementById(id).addEventListener('input', (e) => {
+  orderFilters.search = e.target.value; renderOrders();
+}));
+['of-from', 'of-to', 'of-status'].forEach(id => {
+  const key = id.replace('of-', '');
+  document.getElementById(id).addEventListener('change', (e) => {
+    orderFilters[key] = e.target.value; renderOrders();
+  });
+});
+function clearOrderFilters() {
+  orderFilters = { search: '', from: '', to: '', status: '' };
+  document.getElementById('of-search').value = '';
+  document.getElementById('of-from').value = '';
+  document.getElementById('of-to').value = '';
+  document.getElementById('of-status').value = '';
+  renderOrders();
+}
+
+/* ===== DASHBOARD ===== */
+function renderDashboard() {
+  const validOrders = orders.filter(o => o.status !== 'cancelado');
+  const totalRevenue = validOrders.reduce((sum, o) => sum + Number(o.total || 0), 0);
+  document.getElementById('m-revenue').textContent = 'R$ ' + totalRevenue.toFixed(2).replace('.', ',');
+  document.getElementById('m-orders').textContent = orders.length;
+  document.getElementById('m-avg').textContent = 'R$ ' + (validOrders.length ? totalRevenue / validOrders.length : 0).toFixed(2).replace('.', ',');
+  document.getElementById('m-subs').textContent = subscribers.length;
+
+  // Revenue by day (last 14 days)
+  const days = 14;
+  const buckets = [];
+  const today = new Date();
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    buckets.push({ key: d.toISOString().slice(0, 10), label: d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), total: 0 });
+  }
+  const byDate = {};
+  buckets.forEach(b => byDate[b.key] = b);
+  validOrders.forEach(o => {
+    const key = (o.createdAt || '').slice(0, 10);
+    if (byDate[key]) byDate[key].total += Number(o.total || 0);
+  });
+  const maxTotal = Math.max(1, ...buckets.map(b => b.total));
+  const chart = document.getElementById('revenue-chart');
+  chart.innerHTML = buckets.map(b => `
+    <div class="bar-col">
+      <div class="bar-val">${b.total > 0 ? 'R$' + Math.round(b.total) : ''}</div>
+      <div class="bar" style="height:${Math.max(2, (b.total / maxTotal) * 120)}px;"></div>
+      <div class="bar-day">${b.label}</div>
+    </div>
+  `).join('');
+
+  // Top products by quantity sold
+  const qtyByName = {};
+  validOrders.forEach(o => (o.items || []).forEach(item => {
+    qtyByName[item.name] = (qtyByName[item.name] || 0) + (item.qty || 0);
+  }));
+  const top = Object.entries(qtyByName).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const maxQty = Math.max(1, ...top.map(t => t[1]));
+  const topEl = document.getElementById('top-products');
+  topEl.innerHTML = top.length ? top.map(([name, qty]) => `
+    <div class="top-product-row">
+      <div class="tp-name" title="${name}">${name}</div>
+      <div class="tp-bar-track"><div class="tp-bar-fill" style="width:${(qty / maxQty) * 100}%;"></div></div>
+      <div class="tp-qty">${qty}</div>
+    </div>
+  `).join('') : '<p style="color:var(--muted);font-size:.8rem;">Nenhuma venda ainda.</p>';
+
+  // Status breakdown
+  const statusCounts = {};
+  orders.forEach(o => statusCounts[o.status] = (statusCounts[o.status] || 0) + 1);
+  const breakdownEl = document.getElementById('status-breakdown');
+  breakdownEl.innerHTML = Object.keys(ORDER_STATUS_LABELS).map(s =>
+    `<span class="status-chip">${ORDER_STATUS_LABELS[s]}: ${statusCounts[s] || 0}</span>`
+  ).join('');
+}
+
+const ORDER_STATUS_LABELS = { novo: 'Novo', em_andamento: 'Em andamento', concluido: 'Concluído', cancelado: 'Cancelado' };
+
+function renderOrders() {
+  const tbody = document.getElementById('orders-tbody');
+  const filtered = getFilteredOrders();
+  if (!filtered.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="5">Nenhum pedido encontrado.</td></tr>'; return; }
+  tbody.innerHTML = filtered.map(o => {
+    const itemsSummary = o.items.map(i => `${i.unavailable ? '<s style="color:var(--muted);">' : ''}${esc(i.qty)}x ${esc(i.name)}${i.unavailable ? '</s>' : ''}`).join(', ');
+    const editLink = o.items.length > 1 ? ` <button type="button" class="link-btn" onclick="openOrderItemsForm('${esc(o.id)}')">Editar itens</button>` : '';
+    const date = new Date(o.createdAt).toLocaleString('pt-BR');
+    const options = Object.keys(ORDER_STATUS_LABELS).map(s =>
+      `<option value="${s}" ${o.status === s ? 'selected' : ''}>${ORDER_STATUS_LABELS[s]}</option>`
+    ).join('');
+    const isAnonymized = o.customerName === '[dados removidos a pedido do cliente]';
+    const clientCell = isAnonymized
+      ? `<em style="color:var(--muted);">Dados removidos</em>`
+      : `${esc(o.customerName) || 'Visitante'}${o.customerPhone ? `<br><span style="color:var(--muted);font-size:.72rem;">${esc(o.customerPhone)}</span>` : ''}`;
+    const anonymizeLink = (!isAnonymized && (o.customerName || o.customerPhone || o.customerEmail))
+      ? ` <button type="button" class="link-btn" onclick="anonymizeOrder('${esc(o.id)}')">Remover dados</button>` : '';
+    return `
+    <tr>
+      <td data-label="Data">${date}</td>
+      <td data-label="Cliente">${clientCell}${anonymizeLink}</td>
+      <td data-label="Itens" style="max-width:260px;">${itemsSummary}${editLink}</td>
+      <td data-label="Total"><strong>R$ ${Number(o.total).toFixed(2).replace('.', ',')}</strong></td>
+      <td data-label="Status"><select onchange="updateOrderStatus('${esc(o.id)}', this.value)">${options}</select></td>
+    </tr>`;
+  }).join('');
+}
+
+async function anonymizeOrder(id) {
+  if (!confirm('Remover nome, telefone e e-mail deste pedido? O registro da venda (itens e valores) é mantido, apenas os dados pessoais do cliente são apagados. Essa ação não pode ser desfeita.')) return;
+  try {
+    await api(`/api/admin/orders/${id}/anonymize`, { method: 'POST' });
+    showToast('Dados do cliente removidos');
+    orders = await api('/api/admin/orders');
+    renderOrders();
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+/* ===== ORDER ITEMS EDITOR ===== */
+let editingOrderId = null;
+let editingOrderItems = [];
+
+function orderItemsFormHTML() {
+  if (!editingOrderItems.length) {
+    return '<p style="color:var(--muted);font-size:.85rem;">Todos os itens foram removidos deste pedido.</p>';
+  }
+  const rows = editingOrderItems.map((item, idx) => {
+    const variant = esc([item.size, item.color].filter(Boolean).join(' · '));
+    return `
+    <div class="order-item-row ${item.unavailable ? 'is-unavailable' : ''}">
+      <div class="oi-info">
+        <strong>${esc(item.qty)}x ${esc(item.name)}</strong>
+        ${variant ? `<span class="oi-variant">${variant}</span>` : ''}
+        <span class="oi-price">R$ ${(item.price * item.qty).toFixed(2).replace('.', ',')}</span>
+        ${item.unavailable ? '<span class="oi-flag">Sem estoque</span>' : ''}
+      </div>
+      <div class="oi-actions">
+        <button type="button" onclick="toggleOrderItemUnavailable(${idx})">${item.unavailable ? 'Reativar item' : 'Marcar sem estoque'}</button>
+        <button type="button" class="danger" onclick="removeOrderItem(${idx})">Remover</button>
+      </div>
+    </div>`;
+  }).join('');
+  const newSubtotal = editingOrderItems.filter(i => !i.unavailable).reduce((s, i) => s + i.price * i.qty, 0);
+  return rows + `<div class="oi-totals">Novo subtotal (itens disponíveis): <strong>R$ ${newSubtotal.toFixed(2).replace('.', ',')}</strong></div>`;
+}
+
+function refreshOrderItemsForm() {
+  document.getElementById('form-body').innerHTML = orderItemsFormHTML();
+}
+
+function toggleOrderItemUnavailable(idx) {
+  editingOrderItems[idx].unavailable = !editingOrderItems[idx].unavailable;
+  refreshOrderItemsForm();
+}
+
+function removeOrderItem(idx) {
+  editingOrderItems.splice(idx, 1);
+  refreshOrderItemsForm();
+}
+
+function openOrderItemsForm(orderId) {
+  const o = orders.find(x => x.id === orderId);
+  if (!o) return;
+  editingOrderId = orderId;
+  editingOrderItems = o.items.map(i => ({ ...i, unavailable: !!i.unavailable }));
+  openForm('Itens do pedido', orderItemsFormHTML(), async () => {
+    if (!editingOrderItems.length) throw new Error('Um pedido precisa ter pelo menos um item. Cancele o pedido em vez de remover tudo.');
+    await api(`/api/admin/orders/${editingOrderId}/items`, { method: 'PUT', body: JSON.stringify({ items: editingOrderItems }) });
+  });
+}
+
+async function updateOrderStatus(id, status) {
+  try {
+    await api(`/api/admin/orders/${id}`, { method: 'PUT', body: JSON.stringify({ status }) });
+    showToast('Status atualizado');
+    orders = await api('/api/admin/orders');
+    renderOrders();
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+function renderNewsletter() {
+  const tbody = document.getElementById('newsletter-tbody');
+  if (!subscribers.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="4">Nenhum inscrito ainda.</td></tr>'; return; }
+  tbody.innerHTML = subscribers.map(s => `
+    <tr>
+      <td data-label="Nome">${esc(s.name) || '—'}</td>
+      <td data-label="E-mail">${esc(s.email)}</td>
+      <td data-label="Cadastrado em">${new Date(s.created_at).toLocaleDateString('pt-BR')}</td>
+      <td><button class="danger" onclick="deleteItem('newsletter','${esc(s.id)}','${esc(s.email).replace(/'/g, "\\'")}')">Excluir</button></td>
+    </tr>
+  `).join('');
+}
+
+function categoryName(id) {
+  const c = categories.find(c => c.id === id);
+  return c ? c.name : '—';
+}
+
+/* ===== RENDER TABLES ===== */
+function renderProducts() {
+  const tbody = document.getElementById('products-tbody');
+  const filtered = getFilteredProducts();
+  if (!filtered.length) { tbody.innerHTML = `<tr class="empty-row"><td colspan="6">${products.length ? 'Nenhum produto encontrado com esses filtros.' : 'Nenhum produto cadastrado.'}</td></tr>`; return; }
+  tbody.innerHTML = filtered.map(p => `
+    <tr>
+      <td data-label="Produto"><strong>${esc(p.name)}</strong></td>
+      <td data-label="Categoria">${esc(categoryName(p.categoryId))}</td>
+      <td data-label="Marca">${esc(p.brand) || '—'}</td>
+      <td data-label="Preço">R$ ${Number(p.price).toFixed(2).replace('.', ',')}</td>
+      <td data-label="Status"><span class="pill ${p.active ? 'on' : 'off'}">${p.active ? 'Ativo' : 'Inativo'}</span></td>
+      <td><div class="row-actions">
+        <button onclick="openProductForm('${esc(p.id)}')">Editar</button>
+        <button class="danger" onclick="deleteItem('products','${esc(p.id)}','${esc(p.name).replace(/'/g,"\\'")}')">Excluir</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function renderCategories() {
+  const tbody = document.getElementById('categories-tbody');
+  if (!categories.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="4">Nenhuma categoria cadastrada.</td></tr>'; return; }
+  tbody.innerHTML = categories.map(c => `
+    <tr>
+      <td data-label="Nome"><strong>${esc(c.name)}</strong></td>
+      <td data-label="Slug">${esc(c.slug)}</td>
+      <td data-label="Ordem">${esc(c.sort_order)}</td>
+      <td><div class="row-actions">
+        <button onclick="openCategoryForm('${esc(c.id)}')">Editar</button>
+        <button class="danger" onclick="deleteItem('categories','${esc(c.id)}','${esc(c.name).replace(/'/g,"\\'")}')">Excluir</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function renderCoupons() {
+  const tbody = document.getElementById('coupons-tbody');
+  if (!coupons.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="5">Nenhum cupom cadastrado.</td></tr>'; return; }
+  tbody.innerHTML = coupons.map(c => `
+    <tr>
+      <td data-label="Código"><strong>${esc(c.code)}</strong></td>
+      <td data-label="Descrição">${esc(c.label)}</td>
+      <td data-label="Desconto">${(c.rate * 100).toFixed(0)}%</td>
+      <td data-label="Status"><span class="pill ${c.active ? 'on' : 'off'}">${c.active ? 'Ativo' : 'Inativo'}</span></td>
+      <td><div class="row-actions">
+        <button onclick="openCouponForm('${esc(c.id)}')">Editar</button>
+        <button class="danger" onclick="deleteItem('coupons','${esc(c.id)}','${esc(c.code)}')">Excluir</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function renderBanners() {
+  const tbody = document.getElementById('banners-tbody');
+  if (!banners.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="5">Nenhum banner cadastrado.</td></tr>'; return; }
+  tbody.innerHTML = [...banners].sort((a, b) => a.position - b.position).map(b => `
+    <tr>
+      <td data-label="Ordem">${esc(b.position)}</td>
+      <td data-label="Título"><strong>${esc(b.title)}</strong></td>
+      <td data-label="Tema">${b.theme === 'gold' ? 'Dourado' : 'Preto'}</td>
+      <td data-label="Status"><span class="pill ${b.active ? 'on' : 'off'}">${b.active ? 'Ativo' : 'Inativo'}</span></td>
+      <td><div class="row-actions">
+        <button onclick="openBannerForm('${esc(b.id)}')">Editar</button>
+        <button class="danger" onclick="deleteItem('banners','${esc(b.id)}','${esc(b.title).replace(/'/g,"\\'")}')">Excluir</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+/* ===== DELETE ===== */
+async function deleteItem(type, id, label) {
+  if (!confirm(`Remover "${label}"? Essa ação não pode ser desfeita.`)) return;
+  try {
+    await api(`/api/admin/${type}/${id}`, { method: 'DELETE' });
+    showToast('Removido com sucesso');
+    await loadAll();
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+/* ===== GENERIC FORM DRAWER ===== */
+function openForm(title, bodyHTML, onSave) {
+  document.getElementById('form-title').textContent = title;
+  document.getElementById('form-body').innerHTML = bodyHTML;
+  document.getElementById('form-error').classList.add('hidden');
+  document.getElementById('overlay-form').classList.add('open');
+  const saveBtn = document.getElementById('form-save-btn');
+  saveBtn.onclick = async () => {
+    const errBox = document.getElementById('form-error');
+    errBox.classList.add('hidden');
+    try {
+      await onSave();
+      closeForm();
+      showToast('Salvo com sucesso');
+      await loadAll();
+    } catch (e) {
+      errBox.textContent = e.message;
+      errBox.classList.remove('hidden');
+    }
+  };
+}
+function closeForm() {
+  document.getElementById('overlay-form').classList.remove('open');
+}
+document.getElementById('overlay-form').addEventListener('click', (e) => {
+  if (e.target.id === 'overlay-form') closeForm();
+});
+
+/* ===== PRODUCT FORM ===== */
+let pendingPhotoFile = null;
+
+function onPhotoSelected(input) {
+  const file = input.files[0];
+  if (!file) return;
+  pendingPhotoFile = file;
+  const reader = new FileReader();
+  reader.onload = () => {
+    document.getElementById('photo-preview-wrap').innerHTML =
+      `<img src="${reader.result}" style="width:100%;max-width:220px;border-radius:8px;margin-bottom:10px;display:block;">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePhoto() {
+  pendingPhotoFile = null;
+  document.getElementById('f-image-key').value = '';
+  document.getElementById('f-photo').value = '';
+  document.getElementById('photo-preview-wrap').innerHTML = '';
+}
+
+// Phone cameras produce multi-megabyte photos. Shrink to a sane size in
+// the browser so pages stay fast and the stored blob stays small.
+const MAX_PHOTO_DIMENSION = 1000;
+
+function shrinkPhoto(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width, height } = img;
+      if (width > MAX_PHOTO_DIMENSION || height > MAX_PHOTO_DIMENSION) {
+        const scale = MAX_PHOTO_DIMENSION / Math.max(width, height);
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => (blob ? resolve(blob) : reject(new Error('Não foi possível processar a imagem'))),
+        'image/jpeg',
+        0.82
+      );
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Arquivo de imagem inválido')); };
+    img.src = url;
+  });
+}
+
+async function uploadPendingPhoto() {
+  const blob = await shrinkPhoto(pendingPhotoFile);
+  const res = await fetch('/api/admin/upload', {
+    method: 'POST',
+    headers: { 'Content-Type': 'image/jpeg' },
+    credentials: 'same-origin',
+    body: blob,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Falha ao enviar a foto');
+  return data.key;
+}
+
+function openProductForm(id) {
+  const p = id ? products.find(x => x.id === id) : null;
+  pendingPhotoFile = null;
+  const catOptions = categories.map(c => `<option value="${esc(c.id)}" ${p && p.categoryId === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
+  const body = `
+    <div class="field"><label>Nome do produto</label><input id="f-name" value="${p ? esc(p.name) : ''}"></div>
+    <div class="field">
+      <label>Foto do produto</label>
+      <div id="photo-preview-wrap">${p && p.imageKey ? `<img src="/api/images/${esc(p.imageKey)}" style="width:100%;max-width:220px;border-radius:8px;margin-bottom:10px;display:block;">` : ''}</div>
+      <input type="file" id="f-photo" accept="image/*" capture="environment" onchange="onPhotoSelected(this)">
+      <input type="hidden" id="f-image-key" value="${p && p.imageKey ? esc(p.imageKey) : ''}">
+      <button type="button" class="btn-clear" style="margin-top:8px;" onclick="removePhoto()">Remover foto</button>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Categoria</label><select id="f-category">${catOptions}</select></div>
+      <div class="field"><label>Marca</label><input id="f-brand" value="${p ? esc(p.brand) : ''}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Preço (R$)</label><input id="f-price" type="number" step="0.01" value="${p ? p.price : ''}"></div>
+      <div class="field"><label>Selo (opcional)</label><input id="f-tag" placeholder="Novo, Mais vendido..." value="${p ? esc(p.tag) : ''}"></div>
+    </div>
+    <div class="field"><label>Descrição</label><textarea id="f-description" placeholder="Detalhes do produto para a página individual">${p ? esc(p.description) : ''}</textarea></div>
+    <div class="field"><label>Estoque (deixe em branco para não controlar)</label><input id="f-stock" type="number" min="0" placeholder="Ex: 12" value="${p && p.stock !== null && p.stock !== undefined ? p.stock : ''}"></div>
+    <div class="field-row">
+      <div class="field"><label>Avaliação (0-5)</label><input id="f-rating" type="number" step="0.1" min="0" max="5" value="${p ? p.rating : 4.5}"></div>
+      <div class="field"><label>Nº de avaliações</label><input id="f-reviews" type="number" value="${p ? p.reviews : 0}"></div>
+    </div>
+    <div class="field"><label>Tamanhos (separados por vírgula)</label><input id="f-sizes" value="${p ? esc(p.sizes.join(', ')) : ''}"></div>
+    <div class="field"><label>Cores (separadas por vírgula)</label><input id="f-colors" value="${p ? esc(p.colors.join(', ')) : ''}"></div>
+    <div class="field"><label>Ícone da vitrine</label>
+      <select id="f-icon">
+        <option value="tenis" ${p && p.icon === 'tenis' ? 'selected' : ''}>Tênis</option>
+        <option value="bone" ${p && p.icon === 'bone' ? 'selected' : ''}>Boné</option>
+        <option value="camisa" ${p && p.icon === 'camisa' ? 'selected' : ''}>Camisa</option>
+        <option value="calca" ${p && p.icon === 'calca' ? 'selected' : ''}>Calça</option>
+        <option value="chinelo" ${p && p.icon === 'chinelo' ? 'selected' : ''}>Chinelo</option>
+        <option value="acessorio" ${p && p.icon === 'acessorio' ? 'selected' : ''}>Acessório</option>
+        <option value="geral" ${p && p.icon === 'geral' ? 'selected' : ''}>Genérico</option>
+      </select>
+    </div>
+    <div class="checkbox-row"><input type="checkbox" id="f-active" ${!p || p.active ? 'checked' : ''}><label for="f-active" style="margin:0;">Produto ativo (visível na loja)</label></div>
+  `;
+  openForm(p ? 'Editar produto' : 'Novo produto', body, async () => {
+    let imageKey = document.getElementById('f-image-key').value || null;
+    if (pendingPhotoFile) {
+      imageKey = await uploadPendingPhoto();
+    }
+    const payload = {
+      categoryId: document.getElementById('f-category').value,
+      name: document.getElementById('f-name').value.trim(),
+      brand: document.getElementById('f-brand').value.trim(),
+      price: parseFloat(document.getElementById('f-price').value),
+      tag: document.getElementById('f-tag').value.trim(),
+      rating: parseFloat(document.getElementById('f-rating').value) || 0,
+      reviews: parseInt(document.getElementById('f-reviews').value) || 0,
+      sizes: document.getElementById('f-sizes').value.split(',').map(s => s.trim()).filter(Boolean),
+      colors: document.getElementById('f-colors').value.split(',').map(s => s.trim()).filter(Boolean),
+      icon: document.getElementById('f-icon').value,
+      active: document.getElementById('f-active').checked,
+      description: document.getElementById('f-description').value.trim(),
+      stock: document.getElementById('f-stock').value === '' ? null : parseInt(document.getElementById('f-stock').value),
+      imageKey,
+    };
+    if (!payload.name || !payload.categoryId || isNaN(payload.price)) throw new Error('Preencha nome, categoria e preço.');
+    if (p) await api(`/api/admin/products/${p.id}`, { method: 'PUT', body: JSON.stringify(payload) });
+    else await api('/api/admin/products', { method: 'POST', body: JSON.stringify(payload) });
+    pendingPhotoFile = null;
+  });
+}
+
+/* ===== CATEGORY FORM ===== */
+function openCategoryForm(id) {
+  const c = id ? categories.find(x => x.id === id) : null;
+  const body = `
+    <div class="field"><label>Nome</label><input id="f-name" value="${c ? esc(c.name) : ''}" placeholder="Ex: Camisas"></div>
+    <div class="field"><label>Slug (identificador, sem espaços)</label><input id="f-slug" value="${c ? esc(c.slug) : ''}" placeholder="Ex: camisas"></div>
+    <div class="field"><label>Ordem de exibição</label><input id="f-order" type="number" value="${c ? c.sort_order : 0}"></div>
+  `;
+  openForm(c ? 'Editar categoria' : 'Nova categoria', body, async () => {
+    const payload = {
+      name: document.getElementById('f-name').value.trim(),
+      slug: document.getElementById('f-slug').value.trim().toLowerCase().replace(/\s+/g, '-'),
+      sortOrder: parseInt(document.getElementById('f-order').value) || 0,
+    };
+    if (!payload.name || !payload.slug) throw new Error('Preencha nome e slug.');
+    if (c) await api(`/api/admin/categories/${c.id}`, { method: 'PUT', body: JSON.stringify(payload) });
+    else await api('/api/admin/categories', { method: 'POST', body: JSON.stringify(payload) });
+  });
+}
+
+/* ===== COUPON FORM ===== */
+function openCouponForm(id) {
+  const c = id ? coupons.find(x => x.id === id) : null;
+  const body = `
+    <div class="field"><label>Código do cupom</label><input id="f-code" value="${c ? esc(c.code) : ''}" placeholder="Ex: BEMVINDO10" style="text-transform:uppercase;"></div>
+    <div class="field"><label>Descrição (aparece pro cliente)</label><input id="f-label" value="${c ? esc(c.label) : ''}" placeholder="Ex: BEMVINDO10 — 10% OFF"></div>
+    <div class="field"><label>Desconto (%)</label><input id="f-rate" type="number" step="1" min="0" max="100" value="${c ? Math.round(c.rate * 100) : 0}"></div>
+    <div class="checkbox-row"><input type="checkbox" id="f-active" ${!c || c.active ? 'checked' : ''}><label for="f-active" style="margin:0;">Cupom ativo</label></div>
+  `;
+  openForm(c ? 'Editar cupom' : 'Novo cupom', body, async () => {
+    const payload = {
+      code: document.getElementById('f-code').value.trim().toUpperCase(),
+      label: document.getElementById('f-label').value.trim(),
+      rate: (parseFloat(document.getElementById('f-rate').value) || 0) / 100,
+      active: document.getElementById('f-active').checked,
+    };
+    if (!payload.code || !payload.label) throw new Error('Preencha código e descrição.');
+    if (c) await api(`/api/admin/coupons/${c.id}`, { method: 'PUT', body: JSON.stringify(payload) });
+    else await api('/api/admin/coupons', { method: 'POST', body: JSON.stringify(payload) });
+  });
+}
+
+/* ===== BANNER FORM ===== */
+function openBannerForm(id) {
+  const b = id ? banners.find(x => x.id === id) : null;
+  const body = `
+    <div class="field-row">
+      <div class="field"><label>Ordem</label><input id="f-position" type="number" value="${b ? b.position : banners.length + 1}"></div>
+      <div class="field"><label>Tema</label>
+        <select id="f-theme">
+          <option value="dark" ${!b || b.theme === 'dark' ? 'selected' : ''}>Preto</option>
+          <option value="gold" ${b && b.theme === 'gold' ? 'selected' : ''}>Dourado</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Texto pequeno (acima do título)</label><input id="f-eyebrow" value="${b ? esc(b.eyebrow) : ''}"></div>
+    <div class="field"><label>Título</label><input id="f-title" value="${b ? esc(b.title) : ''}"></div>
+    <div class="field"><label>Descrição</label><textarea id="f-description">${b ? esc(b.description) : ''}</textarea></div>
+    <div class="field"><label>Texto do botão</label><input id="f-cta-label" value="${b ? esc(b.cta_label) : ''}"></div>
+    <div class="field"><label>Ação do botão</label>
+      <select id="f-cta-action">
+        <option value="catalog:todos" ${b && b.cta_action === 'catalog:todos' ? 'selected' : ''}>Abrir catálogo completo</option>
+        <option value="catalog:tenis" ${b && b.cta_action === 'catalog:tenis' ? 'selected' : ''}>Abrir catálogo de Tênis</option>
+        <option value="catalog:bone" ${b && b.cta_action === 'catalog:bone' ? 'selected' : ''}>Abrir catálogo de Bonés</option>
+        <option value="coupon:BEMVINDO10" ${b && b.cta_action === 'coupon:BEMVINDO10' ? 'selected' : ''}>Copiar cupom BEMVINDO10</option>
+      </select>
+    </div>
+    <div class="checkbox-row"><input type="checkbox" id="f-active" ${!b || b.active ? 'checked' : ''}><label for="f-active" style="margin:0;">Banner ativo</label></div>
+  `;
+  openForm(b ? 'Editar banner' : 'Novo banner', body, async () => {
+    const payload = {
+      position: parseInt(document.getElementById('f-position').value) || 0,
+      theme: document.getElementById('f-theme').value,
+      eyebrow: document.getElementById('f-eyebrow').value.trim(),
+      title: document.getElementById('f-title').value.trim(),
+      description: document.getElementById('f-description').value.trim(),
+      ctaLabel: document.getElementById('f-cta-label').value.trim(),
+      ctaAction: document.getElementById('f-cta-action').value,
+      active: document.getElementById('f-active').checked,
+    };
+    if (!payload.title) throw new Error('Preencha o título do banner.');
+    if (b) await api(`/api/admin/banners/${b.id}`, { method: 'PUT', body: JSON.stringify(payload) });
+    else await api('/api/admin/banners', { method: 'POST', body: JSON.stringify(payload) });
+  });
+}
+
+checkAuth();
+</script>
+</body>
+</html>
